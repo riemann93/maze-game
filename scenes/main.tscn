@@ -907,5 +907,9 @@ scale = Vector2(0.7, 0.7)
 
 [node name="HUD" parent="." instance=ExtResource("9_5u2uq")]
 
+[node name="ArrowTimer" type="Timer" parent="."]
+autostart = true
+
 [connection signal="body_entered" from="Chest" to="." method="_on_chest_body_entered"]
 [connection signal="body_entered" from="Key" to="." method="_on_key_body_entered"]
+[connection signal="timeout" from="ArrowTimer" to="." method="_on_arrow_timer_timeout"]

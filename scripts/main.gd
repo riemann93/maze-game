@@ -6,19 +6,18 @@ var cell_scaler = 64
 var path = Vector2i(17, 9)
 var wall = Vector2i(12, 5)
 var item_distance_to_player = 100
+var arrow_scene = preload("res://scenes/arrow.tscn")
+var maze_ylim = [0, 0]
+var maze_xlim = [0, 0]
 
 
 func _ready():
 	var viewport_size = get_viewport().size # if visible_rect is different in the future: var c = get_viewport().get_visible_rect().size
 	var width = viewport_size.x/cell_scaler
 	var height = viewport_size.y/cell_scaler
-	var maze_blueprint = []
-	for x in range(width):
-		var column = []
-		for y in range(height):
-			column.append(y)
-		maze_blueprint.append(column)
 	
+	maze_ylim = [(0+cell_scaler)/cell_scaler, (viewport_size.y-2*cell_scaler)/cell_scaler]
+	print(maze_ylim)
 	var maze = create_maze(25, 15)
 	
 	_fill_tilemap(maze)
@@ -58,9 +57,7 @@ func create_maze(x, y):
 	# Start carving from one cell inside the perimeter
 	board[1][1] = 1
 	carve_maze(board, 1, 1, directions)
-	
 	return board
-
 
 
 func _fill_tilemap(maze_blueprint):
@@ -138,3 +135,17 @@ func _on_chest_body_entered(body):
 		print("grabbing chest")
 		self._chest_grabbed()
 	pass # Replace with function body.
+
+
+func _on_arrow_timer_timeout():
+	# place arrow on random cell on the left, inside the maze limits
+	
+	var arrow_instance = arrow_scene.instantiate()
+	add_child(arrow_instance)
+	
+	var position = Vector2.ZERO
+	print(maze_ylim)
+	var maze_size = maze_ylim[1] - maze_ylim[0]
+	var random_y = randi() % maze_size*cell_scaler
+	print(random_y)
+	arrow_instance.position = Vector2(0, random_y)
