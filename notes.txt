@@ -1,0 +1,32 @@
+Maze Runner:
+
+dynamic maze:
+	Fill the space available with a procedually generated maze.
+
+Player movement:
+	snap character to grid, only movement allowed is centered in walkable cells
+	be able to preemptively turn character, like one block before. Indicate that char is going to turn somehow ( turn signal? xD )
+
+Traps:
+	Add arrows periodically shooting horizontally across the maze.
+	Add boulder falling vertically down across the maze
+
+Art
+	create player sprite
+	create player sprite alts for animation
+	create wall sprites - straight, T, bend, dead-end
+	sprite for dart and boulder
+
+
+gameplay:
+	Navigate the maze, pick up loot and exit the maze and enter the next one.
+	mazes increase in difficulty ( Size, traps ) and in loot.
+	mazes are timed, and sur-plus time is added to next one.
+	loot improve your character short term, and some loot gives currency to improve long term ( Rogue-like )
+	
+
+Ideas:
+	"green zone" when entering maze, timer starts when exitiing "green zone"
+	Some mazes are not timed ( puzzle-like gameplay ) indicate this clearly to player!
+	Could levels not be limited to mazes, but to more open maps?
+	easter egg where you can somehow exit the maze and navigate in the UI around it (just because?)
