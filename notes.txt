@@ -1,11 +1,8 @@
 Maze Runner:
 
-dynamic maze:
-	Fill the space available with a procedually generated maze.
-
 Player movement:
-	snap character to grid, only movement allowed is centered in walkable cells
-	be able to preemptively turn character, like one block before. Indicate that char is going to turn somehow ( turn signal? xD )
+	# Not needed initially: snap character to grid, only movement allowed is centered in walkable cells. 
+	# be able to preemptively turn character, like one block before. Indicate that char is going to turn somehow ( turn signal? xD )
 
 Traps:
 	Add arrows periodically shooting horizontally across the maze.
