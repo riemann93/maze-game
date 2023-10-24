@@ -917,7 +917,7 @@ scale = Vector2(0.7, 0.7)
 [node name="HUD" parent="." instance=ExtResource("9_5u2uq")]
 
 [node name="ArrowTimer" type="Timer" parent="."]
-wait_time = 3.0
+wait_time = 3.038
 
 [node name="GameStart" type="Timer" parent="."]
 wait_time = 3.0

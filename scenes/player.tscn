@@ -8,7 +8,10 @@ radius = 27.0
 height = 68.0
 
 [node name="Player" type="CharacterBody2D"]
+position = Vector2(27, 34)
 disable_mode = 2
+collision_layer = 3
+collision_mask = 3
 slide_on_ceiling = false
 script = ExtResource("1_2fjfu")
 metadata/_edit_group_ = true
@@ -20,4 +23,5 @@ metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_0wmmf")
+debug_color = Color(0, 0.6, 0.701961, 0.419608)
 metadata/_edit_group_ = true

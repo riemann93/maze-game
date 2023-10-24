@@ -3,22 +3,37 @@
 [ext_resource type="Texture2D" uid="uid://pecrgqsl22n2" path="res://art/arrow.png" id="1_gbw66"]
 [ext_resource type="Script" path="res://scripts/arrow.gd" id="1_mlp8v"]
 
-[sub_resource type="SeparationRayShape2D" id="SeparationRayShape2D_ieera"]
-length = 17.1429
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8wgu3"]
+radius = 2.28571
+height = 13.7143
 
-[node name="Arrow" type="Area2D"]
+[node name="Arrow" type="Area2D" groups=["arrows"]]
+collision_layer = 2
+collision_mask = 2
 script = ExtResource("1_mlp8v")
+metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(32, 32)
 texture = ExtResource("1_gbw66")
+metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(1, 31)
+position = Vector2(32, 32)
 rotation = -1.5708
 scale = Vector2(3.5, 3.5)
-shape = SubResource("SeparationRayShape2D_ieera")
+shape = SubResource("CapsuleShape2D_8wgu3")
+metadata/_edit_group_ = true
 
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+position = Vector2(33, 32)
+scale = Vector2(3.3, 1.6)
+metadata/_edit_group_ = true
 
+[node name="StartTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]
+[connection signal="timeout" from="StartTimer" to="." method="_on_start_timer_timeout"]
