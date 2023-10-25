@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://b05022pwciei1" path="res://art/tilesheet_complete.png" id="2_w3tp0"]
 [ext_resource type="PackedScene" uid="uid://syny8tx1g3xq" path="res://scenes/cpu_particles_2d.tscn" id="3_agouy"]
 [ext_resource type="Texture2D" uid="uid://bm76wxtev1bap" path="res://art/wall.png" id="4_yphcb"]
-[ext_resource type="Script" path="res://scripts/Chest.gd" id="5_a5sj2"]
+[ext_resource type="Script" path="res://scripts/chest.gd" id="5_x5jxa"]
 [ext_resource type="Texture2D" uid="uid://bk0xbak7dqyux" path="res://art/chest.png" id="6_x0sms"]
 [ext_resource type="Texture2D" uid="uid://cqgr2clfif1j7" path="res://art/key.png" id="7_rpnsf"]
 [ext_resource type="PackedScene" uid="uid://2gu5h02mqbny" path="res://scenes/player.tscn" id="8_0bhi2"]
@@ -882,7 +882,7 @@ metadata/_edit_group_ = true
 [node name="Chest" type="Area2D" parent="."]
 visible = false
 position = Vector2(-96, -96)
-script = ExtResource("5_a5sj2")
+script = ExtResource("5_x5jxa")
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="Chest"]
@@ -921,6 +921,8 @@ wait_time = 3.0
 
 [node name="GameStart" type="Timer" parent="."]
 wait_time = 3.0
+
+[node name="BoulderTimer" type="Timer" parent="."]
 
 [connection signal="body_entered" from="Chest" to="." method="_on_chest_body_entered"]
 [connection signal="body_entered" from="Key" to="." method="_on_key_body_entered"]

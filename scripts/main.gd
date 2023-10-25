@@ -1,12 +1,16 @@
 extends Node
 
 var arrow_scene = preload("res://scenes/arrow.tscn")
+var boulder_scene = preload("res://scenes/boulder.tscn")
 var maze_utils = preload("res://scripts/maze_utils.gd").new()
 
 var score = 0
 var chests_to_win = 1
 var level = 0
 var has_key = false
+var n_arrows = 0
+var n_boulders = 0
+
 var cell_scaler = 64
 var path = Vector2i(17, 9)
 var wall = Vector2i(12, 5)
@@ -31,9 +35,7 @@ func new_game():
 	width = viewport_size.x/cell_scaler
 	height = viewport_size.y/cell_scaler
 	
-	
 	trim = 1 if level > 5 else 5 - level
-	print(trim)
 	
 	maze_xlim = trim_vector(Vector2i(0, width-1), trim)
 	maze_ylim = trim_vector(Vector2i(0, height-1), trim)
@@ -48,10 +50,16 @@ func new_game():
 	$Player.show()
 	$HUD.update_score(score)
 	
-	if level > 0:
-		$ArrowTimer.wait_time = 3
-		$ArrowTimer.paused = false
-		$ArrowTimer.start()
+	get_tree().call_group("arrows", "queue_free")
+	get_tree().call_group("boulders", "queue_free")
+	
+	n_boulders = 0 if level == 0 else level/2
+	n_arrows = level - n_boulders
+	spawn_boulder(n_boulders)
+	
+	$ArrowTimer.wait_time = 3
+	$ArrowTimer.paused = false
+	$ArrowTimer.start()
 	
 
 func trim_vector(vector: Vector2i, trim=1):
@@ -162,16 +170,31 @@ func _on_chest_body_entered(body):
 
 
 func _on_arrow_timer_timeout():
-	if maze_ylim != Vector2i.ZERO and maze_ylim_len != 0:
-		var taken_spots = []
-		for i in range(level):
-			var random_y = 0
-			while true:
-				random_y = (randi() % maze_ylim_len*cell_scaler) + trim*cell_scaler
-				if random_y not in taken_spots:
-					taken_spots.append(random_y)
-					break
-			var arrow_instance = arrow_scene.instantiate()
-			arrow_instance.strike.connect(strike)
-			add_child(arrow_instance)
-			arrow_instance.position = Vector2(0, random_y)
+	var taken_spots = []
+	for i in range(n_arrows):
+		var random_y = 0
+		while true:
+			random_y = (randi() % maze_ylim_len*cell_scaler) + trim*cell_scaler
+			if random_y not in taken_spots:
+				taken_spots.append(random_y)
+				break
+		var arrow_instance = arrow_scene.instantiate()
+		arrow_instance.strike.connect(strike)
+		add_child(arrow_instance)
+		arrow_instance.position = Vector2((trim-1)*cell_scaler, random_y)
+
+
+func spawn_boulder(boulders = 1):
+	var taken_spots = []
+	for i in boulders:
+		var random_x = 0
+		while true:
+			random_x = (randi() % maze_xlim_len*cell_scaler) + trim*cell_scaler
+			if random_x not in taken_spots:
+				taken_spots.append(random_x)
+				break
+		var boulder_instance = boulder_scene.instantiate()
+		add_child(boulder_instance)
+		boulder_instance.position = Vector2i(random_x, (trim-1)*cell_scaler)
+		boulder_instance.boulder_gone.connect(spawn_boulder)
+	

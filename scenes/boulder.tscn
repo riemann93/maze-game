@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=3 uid="uid://cjvr115ip0dyb"]
+
+[ext_resource type="Script" path="res://scripts/boulder.gd" id="1_86vod"]
+[ext_resource type="Texture2D" uid="uid://bcbpyudbvqv0g" path="res://art/Boulder.png" id="2_g5kg3"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8wgu3"]
+radius = 2.28571
+height = 13.7143
+
+[node name="Boulder" type="Area2D" groups=["boulders"]]
+collision_layer = 2
+collision_mask = 2
+script = ExtResource("1_86vod")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(32, 32)
+texture = ExtResource("2_g5kg3")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(32, 32)
+rotation = -1.5708
+scale = Vector2(3.5, 3.5)
+shape = SubResource("CapsuleShape2D_8wgu3")
+metadata/_edit_group_ = true
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+position = Vector2(33, 32)
+scale = Vector2(3.3, 1.6)
+metadata/_edit_group_ = true
+
+[node name="StartTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]
+[connection signal="timeout" from="StartTimer" to="." method="_on_start_timer_timeout"]
