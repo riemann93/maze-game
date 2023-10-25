@@ -1,7 +1,7 @@
 extends Area2D
 
 var active = false
-var speed = 500
+var speed = 2000
 
 signal strike
 

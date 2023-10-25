@@ -5,6 +5,7 @@ var maze_utils = preload("res://scripts/maze_utils.gd").new()
 
 var score = 0
 var chests_to_win = 1
+var level = 0
 var has_key = false
 var cell_scaler = 64
 var path = Vector2i(17, 9)
@@ -22,10 +23,8 @@ var trim = 1
 func _ready():
 	pass
 
-func new_game(level=0):
+func new_game():
 	if level > 4:
-#		fill_tilemap(full_board(width, height), 0)
-#		await get_tree().process_frame
 		end_game(true)
 		return
 	var viewport_size = get_viewport().size # if visible_rect is different in the future: var c = get_viewport().get_visible_rect().size
@@ -44,13 +43,13 @@ func new_game(level=0):
 	
 	fill_tilemap(full_board(width, height), 0)
 	fill_tilemap(maze, trim)
-	place_items(trim)
+	place_items()
 	$Player.position = _cell_to_pos(Vector2i(trim, trim))
 	$Player.show()
 	$HUD.update_score(score)
 	
 	if level > 0:
-		$ArrowTimer.wait_time = (1/(level*0.3 + 1)) * 5 
+		$ArrowTimer.wait_time = 3
 		$ArrowTimer.paused = false
 		$ArrowTimer.start()
 	
@@ -103,7 +102,7 @@ func fill_tilemap(maze_blueprint, trim):
 	
 
 
-func place_items(trim):
+func place_items():
 	var all_cells = $TileMap.get_used_cells(0)
 	var valid_cells = all_cells.duplicate()
 	for cell in all_cells:
@@ -143,11 +142,13 @@ func _key_grabbed():
 func _chest_grabbed():
 	if has_key:
 		score += 1
-		if score % chests_to_win == 0:
-			new_game(score/chests_to_win)
-		has_key = false
 		$HUD.update_score(score)
-		place_items(trim)
+		has_key = false
+		if score % chests_to_win == 0:
+			level = score/chests_to_win
+			new_game()
+		else:
+			place_items()
 
 
 func _on_key_body_entered(body):
@@ -162,8 +163,15 @@ func _on_chest_body_entered(body):
 
 func _on_arrow_timer_timeout():
 	if maze_ylim != Vector2i.ZERO and maze_ylim_len != 0:
-		var arrow_instance = arrow_scene.instantiate()
-		arrow_instance.strike.connect(strike)
-		add_child(arrow_instance)
-		var random_y = (randi() % maze_ylim_len*cell_scaler) + trim*cell_scaler
-		arrow_instance.position = Vector2(0, random_y)
+		var taken_spots = []
+		for i in range(level):
+			var random_y = 0
+			while true:
+				random_y = (randi() % maze_ylim_len*cell_scaler) + trim*cell_scaler
+				if random_y not in taken_spots:
+					taken_spots.append(random_y)
+					break
+			var arrow_instance = arrow_scene.instantiate()
+			arrow_instance.strike.connect(strike)
+			add_child(arrow_instance)
+			arrow_instance.position = Vector2(0, random_y)

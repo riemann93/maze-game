@@ -5,7 +5,6 @@ Player movement:
 	# be able to preemptively turn character, like one block before. Indicate that char is going to turn somehow ( turn signal? xD )
 
 Traps:
-	Add arrows periodically shooting horizontally across the maze.
 	Add boulder falling vertically down across the maze
 
 Art
@@ -13,6 +12,8 @@ Art
 	create player sprite alts for animation
 	create wall sprites - straight, T, bend, dead-end
 	sprite for dart and boulder
+	block or dart "wind up" arrow and release at great speed
+	player could spur up dirt when changing direction
 
 
 gameplay:
