@@ -2,10 +2,16 @@
 
 [sub_resource type="GDScript" id="GDScript_tsjqk"]
 script/source = "extends Area2D
-var key_sprite = preload(\"res://art/key_red.png\")
 
+var item = \"key_%s\"
 
-func init(value=0):
+signal grab_key
+
+func init(color=0):
+	item = item % color
+	var load_string_f = \"res://art/key_%s.png\"
+	var load_string = load_string_f % color
+	var key_sprite = load(load_string)
 	$Sprite2D.texture = key_sprite
 	$Sprite2D.show()
 # Called when the node enters the scene tree for the first time.
@@ -16,6 +22,11 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
+
+
+func _on_body_entered(body):
+	grab_key.emit(item)
+	queue_free()
 "
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5jg66"]
@@ -37,3 +48,5 @@ position = Vector2(-2.98023e-08, 1.19209e-07)
 rotation = 0.71733
 shape = SubResource("CapsuleShape2D_5jg66")
 metadata/_edit_group_ = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

@@ -1,29 +1,15 @@
 [gd_scene load_steps=3 format=3 uid="uid://mkm4er03q4vg"]
 
-[sub_resource type="GDScript" id="GDScript_tsjqk"]
-script/source = "extends Area2D
-
-
-func init(value=0):
-	print(\"nice: \", value)
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
-"
+[ext_resource type="Script" path="res://scripts/chest.gd" id="1_mwh8x"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5jg66"]
 radius = 11.9449
 height = 39.6986
 
-[node name="Key" type="Area2D"]
+[node name="Chest" type="Area2D" groups=["chests"]]
 visible = false
 position = Vector2(-88, -32)
-script = SubResource("GDScript_tsjqk")
+script = ExtResource("1_mwh8x")
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
