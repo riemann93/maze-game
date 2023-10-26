@@ -22,7 +22,7 @@ func _process(delta):
 radius = 11.9449
 height = 39.6986
 
-[node name="Key" type="Area2D"]
+[node name="Key" type="Area2D" groups=["keys"]]
 visible = false
 position = Vector2(-88, -32)
 script = SubResource("GDScript_tsjqk")

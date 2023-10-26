@@ -34,6 +34,11 @@ func new_game():
 	if level > 4:
 		end_game(true)
 		return
+	
+	get_tree().call_group("arrows", "queue_free")
+	get_tree().call_group("boulders", "queue_free")
+	get_tree().call_group("keys", "queue_free")
+	
 	var viewport_size = get_viewport().size # if visible_rect is different in the future: var c = get_viewport().get_visible_rect().size
 	width = viewport_size.x/cell_scaler
 	height = viewport_size.y/cell_scaler
@@ -59,8 +64,6 @@ func new_game():
 	$Player.show()
 	$HUD.update_score(score)
 	
-	get_tree().call_group("arrows", "queue_free")
-	get_tree().call_group("boulders", "queue_free")
 	
 	n_boulders = 0 if level == 0 else level/2
 	n_arrows = level - n_boulders
@@ -70,6 +73,16 @@ func new_game():
 	$ArrowTimer.paused = false
 	$ArrowTimer.start()
 	
+
+func cell_inside_maze(cell):
+	var is_inside_x = cell.x >= maze_xlim.x and cell.x <= maze_xlim.y
+	var is_inside_y = cell.y >= maze_ylim.x and cell.y <= maze_ylim.y
+	return is_inside_x and is_inside_y
+#	if cell[0] > maze_xlim.[0] and cell[0] < maze_xlim[1] and cell[1] > maze_ylim.[0] and cell[1]
+#		return true
+#	else: 
+#		return false
+
 	
 func place_keys(n_keys):
 	var key_enum = {
@@ -85,7 +98,7 @@ func place_keys(n_keys):
 		for cell in all_cells:
 			var atlas_coords = $TileMap.get_cell_atlas_coords(0, cell)
 			var player_dis = _distance_to_player(_cell_to_pos(cell))
-			if atlas_coords == wall or player_dis < item_distance_to_player:
+			if atlas_coords == wall or player_dis < item_distance_to_player or !cell_inside_maze(cell):
 				valid_cells.erase(cell)
 	
 		var key_cell = randi() % valid_cells.size()
@@ -94,6 +107,7 @@ func place_keys(n_keys):
 		key_instance.init(key_enum[i])
 		add_child(key_instance)
 		key_instance.position = _cell_to_pos(valid_cells[key_cell])
+		print(key_instance.position)
 		key_instance.show()
 		
 		# place chest at exit
@@ -106,6 +120,11 @@ func trim_vector(vector: Vector2i, trim=1):
 	vector[1] -= trim
 	return vector
 
+func _input(event):
+	if event is InputEventKey and event.keycode == 73:
+		var pressed = event.keycode
+		print("I pressed")
+		new_game()
 
 func end_game(won=false):
 	$ArrowTimer.paused = true
