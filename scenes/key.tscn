@@ -1,0 +1,39 @@
+[gd_scene load_steps=3 format=3 uid="uid://c7l7b58jyvsxa"]
+
+[sub_resource type="GDScript" id="GDScript_tsjqk"]
+script/source = "extends Area2D
+var key_sprite = preload(\"res://art/key_red.png\")
+
+
+func init(value=0):
+	$Sprite2D.texture = key_sprite
+	$Sprite2D.show()
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+"
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5jg66"]
+radius = 11.9449
+height = 39.6986
+
+[node name="Key" type="Area2D"]
+visible = false
+position = Vector2(-88, -32)
+script = SubResource("GDScript_tsjqk")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2.98023e-08, 1.19209e-07)
+rotation = 0.71733
+shape = SubResource("CapsuleShape2D_5jg66")
+metadata/_edit_group_ = true

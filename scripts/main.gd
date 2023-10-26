@@ -2,6 +2,8 @@ extends Node
 
 var arrow_scene = preload("res://scenes/arrow.tscn")
 var boulder_scene = preload("res://scenes/boulder.tscn")
+var key_scene = preload("res://scenes/key.tscn")
+var chest_scene = preload("res://scenes/chest.tscn")
 var maze_utils = preload("res://scripts/maze_utils.gd").new()
 
 var score = 0
@@ -14,6 +16,7 @@ var n_boulders = 0
 var cell_scaler = 64
 var path = Vector2i(17, 9)
 var wall = Vector2i(12, 5)
+var exit = Vector2i(17, 8)
 var item_distance_to_player = 100
 var width = 0
 var height = 0
@@ -21,7 +24,7 @@ var maze_ylim = Vector2i.ZERO
 var maze_xlim = Vector2i.ZERO
 var maze_ylim_len = 0
 var maze_xlim_len = 0
-var trim = 1
+var trim = 2
 
 
 func _ready():
@@ -35,7 +38,7 @@ func new_game():
 	width = viewport_size.x/cell_scaler
 	height = viewport_size.y/cell_scaler
 	
-	trim = 1 if level > 5 else 5 - level
+	trim = 2 if level > 5 else 6 - level
 	
 	maze_xlim = trim_vector(Vector2i(0, width-1), trim)
 	maze_ylim = trim_vector(Vector2i(0, height-1), trim)
@@ -45,7 +48,13 @@ func new_game():
 	
 	fill_tilemap(full_board(width, height), 0)
 	fill_tilemap(maze, trim)
-	place_items()
+	
+	var exit_path = Vector2(maze_xlim[1]+1, maze_ylim[1])
+	var exit_cell = Vector2(maze_xlim[1]+2, maze_ylim[1])
+	$TileMap.set_cell(0, exit_path, 0, path)
+	$TileMap.set_cell(0, exit_cell, 0, exit)
+	
+	place_keys(1) # should be level
 	$Player.position = _cell_to_pos(Vector2i(trim, trim))
 	$Player.show()
 	$HUD.update_score(score)
@@ -61,6 +70,36 @@ func new_game():
 	$ArrowTimer.paused = false
 	$ArrowTimer.start()
 	
+	
+func place_keys(n_keys):
+	var key_enum = {
+		0: "red",
+		1: "blue",
+		2: "yellow",
+		3: "green"
+	}
+	for i in n_keys:
+		# place keys randomly
+		var all_cells = $TileMap.get_used_cells(0)
+		var valid_cells = all_cells.duplicate()
+		for cell in all_cells:
+			var atlas_coords = $TileMap.get_cell_atlas_coords(0, cell)
+			var player_dis = _distance_to_player(_cell_to_pos(cell))
+			if atlas_coords == wall or player_dis < item_distance_to_player:
+				valid_cells.erase(cell)
+	
+		var key_cell = randi() % valid_cells.size()
+		valid_cells.erase(key_cell)
+		var key_instance = key_scene.instantiate()
+		key_instance.init(key_enum[i])
+		add_child(key_instance)
+		key_instance.position = _cell_to_pos(valid_cells[key_cell])
+		key_instance.show()
+		
+		# place chest at exit
+		var chest_instance = chest_scene.instantiate()
+		chest_instance.init(key_enum[i])
+		add_child(chest_instance)
 
 func trim_vector(vector: Vector2i, trim=1):
 	vector[0] += trim
@@ -69,14 +108,14 @@ func trim_vector(vector: Vector2i, trim=1):
 
 
 func end_game(won=false):
-	print("but then i took an arrow to the knee!")
 	$ArrowTimer.paused = true
 	get_tree().call_group("arrows", "queue_free")
+	get_tree().call_group("boulders", "queue_free")
 	score = 0
 	trim = 1
 	$Player.hide()
-	$Key.hide()
-	$Chest.hide()
+	$KeyOld.hide()
+	$ChestOld.hide()
 	$HUD.update_score(score)
 	fill_tilemap(full_board(width, height), 0)
 	$HUD.game_over(won)
@@ -123,10 +162,10 @@ func place_items():
 	valid_cells.erase(key_cell)
 	var chest_cell = randi() % valid_cells.size()
 	
-	$Key.position = _cell_to_pos(valid_cells[key_cell])
-	$Chest.position = _cell_to_pos(valid_cells[chest_cell])
-	$Key.show()
-	$Chest.show()
+	$KeyOld.position = _cell_to_pos(valid_cells[key_cell])
+	$ChestOld.position = _cell_to_pos(valid_cells[chest_cell])
+	$KeyOld.show()
+	$ChestOld.show()
 
 
 func _distance_to_player(coords):
@@ -142,8 +181,8 @@ func _process(delta):
 	
 
 func _key_grabbed():
-	$Key.position.x = 0
-	$Key.position.y = 0
+	$KeyOld.position.x = 0
+	$KeyOld.position.y = 0
 	self.has_key = true
 	
 
@@ -197,4 +236,5 @@ func spawn_boulder(boulders = 1):
 		add_child(boulder_instance)
 		boulder_instance.position = Vector2i(random_x, (trim-1)*cell_scaler)
 		boulder_instance.boulder_gone.connect(spawn_boulder)
+		boulder_instance.strike.connect(strike)
 	

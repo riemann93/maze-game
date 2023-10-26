@@ -29,5 +29,5 @@ func _on_start_timer_timeout():
 
 
 func _on_body_entered(body):
-	print("I used to be a traveller like you...")
+	print("Boulder hit")
 	strike.emit()
