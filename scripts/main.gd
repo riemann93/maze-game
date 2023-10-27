@@ -3,15 +3,15 @@ extends Node
 var arrow_scene = preload("res://scenes/arrow.tscn")
 var boulder_scene = preload("res://scenes/boulder.tscn")
 var key_scene = preload("res://scenes/key.tscn")
-var chest_scene = preload("res://scenes/chest.tscn")
+var door_scene = preload("res://scenes/door.tscn")
 var maze_utils = preload("res://scripts/maze_utils.gd").new()
 
 var score = 0
-var chests_to_win = 1
 var level = 0
-var has_key = false
+var door_level
 var n_arrows = 0
 var n_boulders = 0
+var has_key = false
 
 var cell_scaler = 64
 var path = Vector2i(17, 9)
@@ -24,6 +24,7 @@ var maze_ylim = Vector2i.ZERO
 var maze_xlim = Vector2i.ZERO
 var maze_ylim_len = 0
 var maze_xlim_len = 0
+var exit_path
 var trim = 2
 
 
@@ -38,7 +39,9 @@ func new_game():
 	get_tree().call_group("arrows", "queue_free")
 	get_tree().call_group("boulders", "queue_free")
 	get_tree().call_group("keys", "queue_free")
+	get_tree().call_group("doors", "queue_free")
 	
+	var player = $Player
 	var viewport_size = get_viewport().size # if visible_rect is different in the future: var c = get_viewport().get_visible_rect().size
 	width = viewport_size.x/cell_scaler
 	height = viewport_size.y/cell_scaler
@@ -54,14 +57,18 @@ func new_game():
 	fill_tilemap(full_board(width, height), 0)
 	fill_tilemap(maze, trim)
 	
-	var exit_path = Vector2(maze_xlim[1]+1, maze_ylim[1])
+	exit_path = Vector2(maze_xlim[1]+1, maze_ylim[1])
 	var exit_cell = Vector2(maze_xlim[1]+2, maze_ylim[1])
 	$TileMap.set_cell(0, exit_path, 0, path)
 	$TileMap.set_cell(0, exit_cell, 0, exit)
 	
-	place_items(4, exit_path) # should be level
-	$Player.position = cell_to_pos(Vector2i(trim, trim))
-	$Player.show()
+	door_level = 4#level
+	place_items(door_level, exit_path)
+
+	player.position = cell_to_pos(Vector2i(trim, trim))
+	var win_x = (exit_path.x + 1) * cell_scaler
+	player.win_x = win_x
+	player.show()
 	$HUD.update_score(score)
 	
 	
@@ -83,41 +90,46 @@ func cell_inside_maze(cell):
 #	else: 
 #		return false
 
+func place_key(color):
+	# place keys randomly
+	var all_cells = $TileMap.get_used_cells(0)
+	var valid_cells = all_cells.duplicate()
+	for cell in all_cells:
+		var atlas_coords = $TileMap.get_cell_atlas_coords(0, cell)
+		var player_dis = distance_to_player(cell_to_pos(cell))
+		if atlas_coords == wall or player_dis < item_distance_to_player or !cell_inside_maze(cell):
+			valid_cells.erase(cell)
+
+	var key_cell = randi() % valid_cells.size()
+	valid_cells.erase(key_cell)
+	var key_instance = key_scene.instantiate()
+	add_child(key_instance)
+	key_instance.position = cell_to_pos(valid_cells[key_cell])
+	print(key_instance.position)
+	key_instance.show()
+	key_instance.grab_key.connect(item_grabbed)
 	
-func place_items(n_keys, exit_path):
+	
+func place_door(_door_level, pos):
+	# place chest at exit
+	var door_instance = door_scene.instantiate()
+	add_child(door_instance)
+	door_instance.position = pos
+	door_instance.init(_door_level)
+	door_instance.show()
+	door_instance.door_handle.connect(open_door)
+
+
+func place_items(_door_level, exit_path):
 	var color_enum = {
 		0: "red",
 		1: "blue",
 		2: "yellow",
 		3: "green"
 	}
-	for i in n_keys:
-		# place keys randomly
-		var all_cells = $TileMap.get_used_cells(0)
-		var valid_cells = all_cells.duplicate()
-		for cell in all_cells:
-			var atlas_coords = $TileMap.get_cell_atlas_coords(0, cell)
-			var player_dis = distance_to_player(cell_to_pos(cell))
-			if atlas_coords == wall or player_dis < item_distance_to_player or !cell_inside_maze(cell):
-				valid_cells.erase(cell)
-	
-		var key_cell = randi() % valid_cells.size()
-		valid_cells.erase(key_cell)
-		var key_instance = key_scene.instantiate()
-		key_instance.init(color_enum[i])
-		add_child(key_instance)
-		key_instance.position = cell_to_pos(valid_cells[key_cell])
-		print(key_instance.position)
-		key_instance.show()
-		key_instance.grab_key.connect(item_grabbed)
-		
-		# place chest at exit
-		var chest_instance = chest_scene.instantiate()
-		chest_instance.init(color_enum[i])
-		add_child(chest_instance)
-		var chest_pos = cell_to_pos(Vector2i(exit_path.x, exit_path.y - i))
-		chest_instance.position = chest_pos
-		key_instance.show()
+	place_key(color_enum[0])
+	var door_pos = cell_to_pos(Vector2i(exit_path ))
+	place_door(_door_level, door_pos)
 
 func trim_vector(vector: Vector2i, trim=1):
 	vector[0] += trim
@@ -134,12 +146,8 @@ func end_game(won=false):
 	$ArrowTimer.paused = true
 	get_tree().call_group("arrows", "queue_free")
 	get_tree().call_group("boulders", "queue_free")
-	score = 0
 	trim = 1
 	$Player.hide()
-	$KeyOld.hide()
-	$ChestOld.hide()
-	$HUD.update_score(score)
 	fill_tilemap(full_board(width, height), 0)
 	$HUD.game_over(won)
 
@@ -169,26 +177,6 @@ func fill_tilemap(maze_blueprint, trim):
 				$TileMap.set_cell(0, cell, 0, path)
 			y_index += 1
 		x_index += 1
-	
-#
-#
-#func place_items():
-#	var all_cells = $TileMap.get_used_cells(0)
-#	var valid_cells = all_cells.duplicate()
-#	for cell in all_cells:
-#		var atlas_coords = $TileMap.get_cell_atlas_coords(0, cell)
-#		var player_dis = _distance_to_player(_cell_to_pos(cell))
-#		if atlas_coords == wall or player_dis < item_distance_to_player:
-#			valid_cells.erase(cell)
-#
-#	var key_cell = randi() % valid_cells.size()
-#	valid_cells.erase(key_cell)
-#	var chest_cell = randi() % valid_cells.size()
-#
-#	$KeyOld.position = _cell_to_pos(valid_cells[key_cell])
-#	$ChestOld.position = _cell_to_pos(valid_cells[chest_cell])
-#	$KeyOld.show()
-#	$ChestOld.show()
 
 
 func distance_to_player(coords):
@@ -203,22 +191,27 @@ func _process(delta):
 	pass
 	
 
-func item_grabbed(item):
-	$Player.loot(item)
-	print(item)
+func item_grabbed():
+	has_key = true
 	
 
-func chest_grabbed():
-	pass
-#	if has_key:
-#		score += 1
-#		$HUD.update_score(score)
-#		has_key = false
-#		if score % chests_to_win == 0:
-#			level = score/chests_to_win
-#			new_game()
-#		else:
-#			place_items()
+func open_door():
+	if has_key:
+		has_key = false
+		print("Door openend")
+		get_tree().call_group("doors", "queue_free")
+		if door_level > 1:
+			door_level -= 1
+			place_items(door_level, exit_path)
+	else:
+		print("Door locked!")
+
+
+func exit_maze():
+	print("exiting")
+	has_key = false
+	level += 1
+	new_game()
 
 
 func _on_arrow_timer_timeout():

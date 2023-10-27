@@ -1,12 +1,8 @@
-[gd_scene load_steps=20 format=3 uid="uid://cl5f13y472d5q"]
+[gd_scene load_steps=11 format=3 uid="uid://cl5f13y472d5q"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_cls1y"]
 [ext_resource type="Texture2D" uid="uid://b05022pwciei1" path="res://art/tilesheet_complete.png" id="2_w3tp0"]
 [ext_resource type="PackedScene" uid="uid://syny8tx1g3xq" path="res://scenes/cpu_particles_2d.tscn" id="3_agouy"]
-[ext_resource type="Texture2D" uid="uid://bm76wxtev1bap" path="res://art/wall.png" id="4_yphcb"]
-[ext_resource type="Script" path="res://scripts/chest.gd" id="5_x5jxa"]
-[ext_resource type="Texture2D" uid="uid://bk0xbak7dqyux" path="res://art/chest.png" id="6_x0sms"]
-[ext_resource type="Texture2D" uid="uid://cqgr2clfif1j7" path="res://art/key.png" id="7_rpnsf"]
 [ext_resource type="PackedScene" uid="uid://2gu5h02mqbny" path="res://scenes/player.tscn" id="8_0bhi2"]
 [ext_resource type="PackedScene" uid="uid://bs5owoyreq44r" path="res://scenes/hud.tscn" id="9_5u2uq"]
 
@@ -825,32 +821,6 @@ sources/1 = SubResource("TileSetScenesCollectionSource_yla7n")
 pattern_0 = SubResource("TileMapPattern_yoeef")
 pattern_1 = SubResource("TileMapPattern_s33qw")
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_5efu1"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_f08vg"]
-size = Vector2(427, 62)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ahlku"]
-size = Vector2(64, 66)
-
-[sub_resource type="GDScript" id="GDScript_hetrs"]
-script/source = "extends Area2D
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
-"
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yqgdd"]
-radius = 11.9449
-height = 39.6986
-
 [node name="Main" type="Node"]
 script = ExtResource("1_cls1y")
 
@@ -862,52 +832,6 @@ layer_0/tile_data = PackedInt32Array(0, 786432, 5, 65536, 786432, 5, 131072, 786
 [node name="StartPoint" type="Marker2D" parent="."]
 
 [node name="EndPoint" type="Marker2D" parent="."]
-
-[node name="Platform" type="StaticBody2D" parent="."]
-position = Vector2(-545, 183)
-disable_mode = 2
-physics_material_override = SubResource("PhysicsMaterial_5efu1")
-metadata/_edit_group_ = true
-
-[node name="Sprite2D" type="Sprite2D" parent="Platform"]
-position = Vector2(214, 31)
-texture = ExtResource("4_yphcb")
-metadata/_edit_group_ = true
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform"]
-position = Vector2(214, 31)
-shape = SubResource("RectangleShape2D_f08vg")
-metadata/_edit_group_ = true
-
-[node name="ChestOld" type="Area2D" parent="."]
-visible = false
-position = Vector2(-96, -96)
-script = ExtResource("5_x5jxa")
-metadata/_edit_group_ = true
-
-[node name="Sprite2D" type="Sprite2D" parent="ChestOld"]
-texture = ExtResource("6_x0sms")
-metadata/_edit_group_ = true
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ChestOld"]
-shape = SubResource("RectangleShape2D_ahlku")
-metadata/_edit_group_ = true
-
-[node name="KeyOld" type="Area2D" parent="."]
-visible = false
-position = Vector2(-88, -32)
-script = SubResource("GDScript_hetrs")
-metadata/_edit_group_ = true
-
-[node name="Sprite2D" type="Sprite2D" parent="KeyOld"]
-texture = ExtResource("7_rpnsf")
-metadata/_edit_group_ = true
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="KeyOld"]
-position = Vector2(-2.98023e-08, 1.19209e-07)
-rotation = 0.71733
-shape = SubResource("CapsuleShape2D_yqgdd")
-metadata/_edit_group_ = true
 
 [node name="Player" parent="." instance=ExtResource("8_0bhi2")]
 visible = false
@@ -924,7 +848,6 @@ wait_time = 3.0
 
 [node name="BoulderTimer" type="Timer" parent="."]
 
-[connection signal="body_entered" from="ChestOld" to="." method="_on_chest_body_entered"]
-[connection signal="body_entered" from="KeyOld" to="." method="_on_key_body_entered"]
+[connection signal="exit" from="Player" to="." method="exit_maze"]
 [connection signal="start_game" from="HUD" to="." method="new_game"]
 [connection signal="timeout" from="ArrowTimer" to="." method="_on_arrow_timer_timeout"]

@@ -1,33 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://c7l7b58jyvsxa"]
+[gd_scene load_steps=4 format=3 uid="uid://c7l7b58jyvsxa"]
 
-[sub_resource type="GDScript" id="GDScript_tsjqk"]
-script/source = "extends Area2D
-
-var item = \"key_%s\"
-
-signal grab_key
-
-func init(color=0):
-	item = item % color
-	var load_string_f = \"res://art/key_%s.png\"
-	var load_string = load_string_f % color
-	var key_sprite = load(load_string)
-	$Sprite2D.texture = key_sprite
-	$Sprite2D.show()
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
-
-
-func _on_body_entered(body):
-	grab_key.emit(item)
-	queue_free()
-"
+[ext_resource type="Script" path="res://scripts/key.gd" id="1_6uksn"]
+[ext_resource type="Texture2D" uid="uid://dxe10cd1y0qmf" path="res://art/key_red.png" id="1_maw1k"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5jg66"]
 radius = 11.9449
@@ -36,11 +10,12 @@ height = 39.6986
 [node name="Key" type="Area2D" groups=["keys"]]
 visible = false
 position = Vector2(-88, -32)
-script = SubResource("GDScript_tsjqk")
+script = ExtResource("1_6uksn")
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 visible = false
+texture = ExtResource("1_maw1k")
 metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

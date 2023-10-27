@@ -6,6 +6,10 @@ Player movement:
 
 Traps:
 	Add boulder falling vertically down across the maze
+	
+	bugs:
+		sometimes boulders seem to overlap.
+		door is not queued_free() at right time
 
 Art
 	create player sprite
