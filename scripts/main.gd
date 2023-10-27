@@ -12,6 +12,7 @@ var door_level
 var n_arrows = 0
 var n_boulders = 0
 var has_key = false
+var timer = 30
 
 var cell_scaler = 64
 var path = Vector2i(17, 9)
@@ -69,8 +70,7 @@ func new_game():
 	var win_x = (exit_path.x + 1) * cell_scaler
 	player.win_x = win_x
 	player.show()
-	$HUD.update_score(score)
-	
+	$HUD.timer += timer
 	
 	n_boulders = 0 if level == 0 else level/2
 	n_arrows = level - n_boulders
@@ -79,6 +79,8 @@ func new_game():
 	$ArrowTimer.wait_time = 3
 	$ArrowTimer.paused = false
 	$ArrowTimer.start()
+	
+	
 	
 
 func cell_inside_maze(cell):
@@ -146,6 +148,8 @@ func end_game(won=false):
 	$ArrowTimer.paused = true
 	get_tree().call_group("arrows", "queue_free")
 	get_tree().call_group("boulders", "queue_free")
+	get_tree().call_group("keys", "queue_free")
+	get_tree().call_group("doors", "queue_free")
 	trim = 1
 	$Player.hide()
 	fill_tilemap(full_board(width, height), 0)

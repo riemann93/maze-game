@@ -1,16 +1,16 @@
 Maze Runner:
+	
+bugs:
+	sometimes boulders seem to overlap.
+	
+
 
 Player movement:
 	# Not needed initially: snap character to grid, only movement allowed is centered in walkable cells. 
 	# be able to preemptively turn character, like one block before. Indicate that char is going to turn somehow ( turn signal? xD )
 
-Traps:
-	Add boulder falling vertically down across the maze
 	
-	bugs:
-		sometimes boulders seem to overlap.
-		door is not queued_free() at right time
-
+	
 Art
 	create player sprite
 	create player sprite alts for animation

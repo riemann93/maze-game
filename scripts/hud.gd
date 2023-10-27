@@ -1,17 +1,23 @@
 extends CanvasLayer
 
-var score_text = "Score: "
+var timer_text = "Timer: %s"
+@export var timer: int
+var timer_delta = 0
 var game_active = false
+var timer_label
 
 signal start_game
 
 func _ready():
-	pass # Replace with function body.
-
+	timer_label = $TimerLabel
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	pass
+	if game_active:
+		timer_delta += delta
+		var _time = timer + 1 - timer_delta
+		timer_label.text = timer_text % str(int(_time))
 
 
 func game_over(won=false):
@@ -19,18 +25,18 @@ func game_over(won=false):
 	if won:
 		$Title.text = "<CONGRATULATIONS>"
 		$SubTitle.text = "{YOU_WON!}"
-	$ScoreLabel.hide()
+	$TimerLabel.hide()
 	$Title.show()
 	$SubTitle.show()
 
 
 func update_score(score):
-	$ScoreLabel.text = score_text + str(score)
+	$TimerLabel.text = timer_text + str(score)
 
 
 func _input(event):
 	if event is InputEventKey and event.pressed and game_active == false:
-		$ScoreLabel.show()
+		$TimerLabel.show()
 		$Title.hide()
 		$SubTitle.hide()
 		start_game.emit()

@@ -7,7 +7,7 @@
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_gednm")
 
-[node name="ScoreLabel" type="Label" parent="."]
+[node name="TimerLabel" type="Label" parent="."]
 visible = false
 offset_right = 192.0
 offset_bottom = 61.0
