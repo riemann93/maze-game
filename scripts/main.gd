@@ -36,12 +36,7 @@ func new_game():
 	if level > 4:
 		end_game(true)
 		return
-	
-	get_tree().call_group("arrows", "queue_free")
-	get_tree().call_group("boulders", "queue_free")
-	get_tree().call_group("keys", "queue_free")
-	get_tree().call_group("doors", "queue_free")
-	
+	queue_free_items()
 	var player = $Player
 	var viewport_size = get_viewport().size # if visible_rect is different in the future: var c = get_viewport().get_visible_rect().size
 	width = viewport_size.x/cell_scaler
@@ -63,7 +58,7 @@ func new_game():
 	$TileMap.set_cell(0, exit_path, 0, path)
 	$TileMap.set_cell(0, exit_cell, 0, exit)
 	
-	door_level = 4#level
+	door_level = 1 + level
 	place_items(door_level, exit_path)
 
 	player.position = cell_to_pos(Vector2i(trim, trim))
@@ -92,7 +87,7 @@ func cell_inside_maze(cell):
 #	else: 
 #		return false
 
-func place_key(color):
+func place_key():
 	# place keys randomly
 	var all_cells = $TileMap.get_used_cells(0)
 	var valid_cells = all_cells.duplicate()
@@ -123,13 +118,7 @@ func place_door(_door_level, pos):
 
 
 func place_items(_door_level, exit_path):
-	var color_enum = {
-		0: "red",
-		1: "blue",
-		2: "yellow",
-		3: "green"
-	}
-	place_key(color_enum[0])
+	place_key()
 	var door_pos = cell_to_pos(Vector2i(exit_path ))
 	place_door(_door_level, door_pos)
 
@@ -144,16 +133,22 @@ func _input(event):
 		print("I pressed")
 		new_game()
 
-func end_game(won=false):
-	$ArrowTimer.paused = true
+
+func queue_free_items():
 	get_tree().call_group("arrows", "queue_free")
 	get_tree().call_group("boulders", "queue_free")
 	get_tree().call_group("keys", "queue_free")
 	get_tree().call_group("doors", "queue_free")
-	trim = 1
+
+
+func end_game(won=false):
+	queue_free_items()
+	$ArrowTimer.paused = true
+	level = 0
 	$Player.hide()
 	fill_tilemap(full_board(width, height), 0)
 	$HUD.game_over(won)
+	$HUD.timer = 0
 
 func strike():
 	end_game()
@@ -202,17 +197,13 @@ func item_grabbed():
 func open_door():
 	if has_key:
 		has_key = false
-		print("Door openend")
 		get_tree().call_group("doors", "queue_free")
 		if door_level > 1:
 			door_level -= 1
 			place_items(door_level, exit_path)
-	else:
-		print("Door locked!")
 
 
 func exit_maze():
-	print("exiting")
 	has_key = false
 	level += 1
 	new_game()
@@ -247,4 +238,30 @@ func spawn_boulder(boulders = 1):
 		boulder_instance.position = Vector2i(random_x, (trim-1)*cell_scaler)
 		boulder_instance.boulder_gone.connect(spawn_boulder)
 		boulder_instance.strike.connect(strike)
-	
+
+
+#func _on_arrow_timer_timeout():
+#	var taken_spots = []
+#	for i in range(n_arrows):
+#		taken_spots.append(spawn_trap(maze_ylim_len, arrow_scene, false, taken_spots))
+#
+#
+#func spawn_boulder(boulders = 1):
+#	var taken_spots = []
+#	for i in range(boulders):
+#		taken_spots.append(spawn_trap(maze_xlim_len, arrow_scene, true, taken_spots))
+#
+#
+#func spawn_trap(spots_len, scene, is_x, taken_spots):
+#	# is_x is true if trap should be put along the x-axis. false if along the y-axis
+#	var random_spot = 0
+#	while true:
+#		random_spot = (randi() % spots_len*cell_scaler) + trim*cell_scaler
+#		if random_spot not in taken_spots:
+#			break
+#	var trap_instance = scene.instantiate()
+#	add_child(trap_instance)
+#	trap_instance.strike.connect(strike)
+#	var ofset = (trim-1)*cell_scaler
+#	trap_instance.position = Vector2(ofset, random_spot) if is_x else Vector2(random_spot, ofset)
+#	return random_spot

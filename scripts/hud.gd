@@ -17,21 +17,21 @@ func _process(delta):
 	if game_active:
 		timer_delta += delta
 		var _time = timer + 1 - timer_delta
+		if _time < 0:
+			var main = get_tree().get_root().get_node("Main")
+			main.end_game()
 		timer_label.text = timer_text % str(int(_time))
 
 
 func game_over(won=false):
 	game_active = false
+	timer_delta = 0
 	if won:
 		$Title.text = "<CONGRATULATIONS>"
 		$SubTitle.text = "{YOU_WON!}"
 	$TimerLabel.hide()
 	$Title.show()
 	$SubTitle.show()
-
-
-func update_score(score):
-	$TimerLabel.text = timer_text + str(score)
 
 
 func _input(event):
