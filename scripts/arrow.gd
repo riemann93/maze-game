@@ -8,9 +8,13 @@ signal strike
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass # Replace with function body.
-	var start_timer = get_node("StartTimer")
-	start_timer.start()
 
+
+func set_timer(time):
+	
+	$StartTimer.wait_time = time
+	$StartTimer.start()
+	print("arrow_timer: ", time)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

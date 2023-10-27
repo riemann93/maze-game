@@ -13,6 +13,7 @@ var n_arrows = 0
 var n_boulders = 0
 var has_key = false
 var timer = 30
+var lives = 3
 
 var cell_scaler = 64
 var path = Vector2i(17, 9)
@@ -33,7 +34,7 @@ func _ready():
 	pass
 
 func new_game():
-	if level > 4:
+	if level >= 5:
 		end_game(true)
 		return
 	queue_free_items()
@@ -59,6 +60,8 @@ func new_game():
 	$TileMap.set_cell(0, exit_cell, 0, exit)
 	
 	door_level = 1 + level
+	if door_level > 4:
+		door_level = 4
 	place_items(door_level, exit_path)
 
 	player.position = cell_to_pos(Vector2i(trim, trim))
@@ -66,6 +69,7 @@ func new_game():
 	player.win_x = win_x
 	player.show()
 	$HUD.timer += timer
+	$HUD.update_lives(lives)
 	
 	n_boulders = 0 if level == 0 else level/2
 	n_arrows = level - n_boulders
@@ -74,18 +78,13 @@ func new_game():
 	$ArrowTimer.wait_time = 3
 	$ArrowTimer.paused = false
 	$ArrowTimer.start()
-	
-	
-	
+
 
 func cell_inside_maze(cell):
 	var is_inside_x = cell.x >= maze_xlim.x and cell.x <= maze_xlim.y
 	var is_inside_y = cell.y >= maze_ylim.x and cell.y <= maze_ylim.y
 	return is_inside_x and is_inside_y
-#	if cell[0] > maze_xlim.[0] and cell[0] < maze_xlim[1] and cell[1] > maze_ylim.[0] and cell[1]
-#		return true
-#	else: 
-#		return false
+
 
 func place_key():
 	# place keys randomly
@@ -142,16 +141,23 @@ func queue_free_items():
 
 
 func end_game(won=false):
-	queue_free_items()
 	$ArrowTimer.paused = true
+	queue_free_items()
 	level = 0
+	lives = 3
+	$Player.position = cell_to_pos(Vector2i(trim, trim))
 	$Player.hide()
 	fill_tilemap(full_board(width, height), 0)
 	$HUD.game_over(won)
 	$HUD.timer = 0
 
 func strike():
-	end_game()
+	lives -= 1
+	if lives < 1:
+		end_game()
+		return
+	$HUD.update_lives(lives)
+	
 
 
 func full_board(x, y):
@@ -222,6 +228,8 @@ func _on_arrow_timer_timeout():
 		arrow_instance.strike.connect(strike)
 		add_child(arrow_instance)
 		arrow_instance.position = Vector2((trim-1)*cell_scaler, random_y)
+		arrow_instance.set_timer(1.5 + i*0.2)
+		print(i)
 
 
 func spawn_boulder(boulders = 1):

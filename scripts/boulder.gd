@@ -10,6 +10,8 @@ signal boulder_gone
 func _ready():
 	pass # Replace with function body.
 	var start_timer = get_node("StartTimer")
+	speed = randi() % 400 + 400
+	print(speed)
 	start_timer.start()
 
 
