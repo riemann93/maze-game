@@ -26,6 +26,19 @@ theme_override_fonts/font = ExtResource("1_nn3c8")
 theme_override_font_sizes/font_size = 48
 text = "lives"
 
+[node name="BombsLabel" type="Label" parent="."]
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("1_nn3c8")
+theme_override_font_sizes/font_size = 48
+text = "Bombs"
+
 [node name="Title" type="Label" parent="."]
 anchors_preset = 5
 anchor_left = 0.5

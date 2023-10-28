@@ -2,11 +2,13 @@ extends CanvasLayer
 
 var timer_text = "Timer: %s"
 var lives_text = "Lives: %s"
+var bombs_text = "Bombs: %s"
 @export var timer: int
 var timer_delta = 0
 var game_active = false
 var timer_label
 var lives_label
+var bombs_label
 var anykey = false
 
 signal start_game
@@ -14,6 +16,7 @@ signal start_game
 func _ready():
 	timer_label = $TimerLabel
 	lives_label = $LivesLabel
+	bombs_label = $BombsLabel
 	$AnykeyTimer.start()
 	
 
@@ -30,6 +33,11 @@ func _process(delta):
 func update_lives(lives):
 	lives_label.text = lives_text % lives
 
+
+func update_bombs(bombs):
+	bombs_label.text = bombs_text % bombs
+
+
 func game_over(won=false):
 	game_active = false
 	anykey = false
@@ -40,6 +48,7 @@ func game_over(won=false):
 		$SubTitle.show()
 	$TimerLabel.hide()
 	$LivesLabel.hide()
+	$BombsLabel.hide()
 	$Title.show()
 	$AnykeyTimer.start()
 
@@ -49,6 +58,7 @@ func _input(event):
 		# $AnykeyTimer.pause()
 		$TimerLabel.show()
 		$LivesLabel.show()
+		$BombsLabel.show()
 		$Title.hide()
 		$SubTitle.hide()
 		start_game.emit()

@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://ce4h0lrff2n1a"]
+
+[ext_resource type="Texture2D" uid="uid://dkmb87r8jttc5" path="res://art/bomb.png" id="1_gx47p"]
+[ext_resource type="Script" path="res://scripts/bomb.gd" id="1_w58jh"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_iomhq"]
+radius = 105.119
+
+[node name="Bomb" type="Area2D" groups=["bombs"]]
+scale = Vector2(0.8, 0.8)
+script = ExtResource("1_w58jh")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_gx47p")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_iomhq")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -5.0
+offset_top = -11.0
+offset_right = 35.0
+offset_bottom = 15.0

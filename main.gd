@@ -6,6 +6,7 @@ var key_scene = preload("res://scenes/key.tscn")
 var door_scene = preload("res://scenes/door.tscn")
 var maze_utils = preload("res://scripts/maze_utils.gd").new()
 
+var player
 var score = 0
 var level = 0
 var door_level
@@ -13,7 +14,8 @@ var n_arrows = 0
 var n_boulders = 0
 var has_key = false
 var timer = 30
-var lives = 3
+var lives 
+var bombs
 
 var cell_scaler = 64
 var path = Vector2i(17, 9)
@@ -31,14 +33,16 @@ var trim = 2
 
 
 func _ready():
-	pass
+	lives = 3
+	bombs = 3
+	player = $Player
+	player.init(bombs)
 
 func new_game():
 	if level >= 6:
 		end_game(true)
 		return
 	queue_free_items()
-	var player = $Player
 	var viewport_size = get_viewport().size # if visible_rect is different in the future: var c = get_viewport().get_visible_rect().size
 	width = viewport_size.x/cell_scaler
 	height = viewport_size.y/cell_scaler
@@ -138,6 +142,8 @@ func queue_free_items():
 	get_tree().call_group("boulders", "queue_free")
 	get_tree().call_group("keys", "queue_free")
 	get_tree().call_group("doors", "queue_free")
+	get_tree().call_group("shoes", "queue_free")
+	get_tree().call_group("bombs", "queue_free")
 
 
 func end_game(won=false):
@@ -145,7 +151,9 @@ func end_game(won=false):
 	queue_free_items()
 	level = 0
 	lives = 3
+	bombs = 3
 	$Player.position = cell_to_pos(Vector2i(trim, trim))
+	$Player.init(bombs)
 	$Player.hide()
 	fill_tilemap(full_board(width, height), 0)
 	$HUD.game_over(won)
@@ -162,23 +170,24 @@ func strike():
 
 func try_to_jump(position, direction):
 	var cell = pos_to_cell(position)
-	print("Current pos: ", cell, $TileMap.get_cell_atlas_coords(0, cell+direction))
 	var potential_wall = $TileMap.get_cell_atlas_coords(0, cell+direction)
-	print("potential_wall: ", cell+direction, potential_wall)
 	var other_side = $TileMap.get_cell_atlas_coords(0, cell+2*direction)
-	print("other side: ", cell+2*direction, other_side)
-	if potential_wall == wall:
-		print("it's a wall!")
-		if other_side == path:
-			# print("It's jumpable!")
-			pass
-		else:
-			pass
-			# print("Can't get over...")
-	else:
-		# print("not a wall")
-		pass
-	
+	if potential_wall == wall and other_side == path:
+		return cell_to_pos(cell+2*direction)
+	return null
+
+
+func cell_ahead(position, direction):
+	var cell = pos_to_cell(position)
+	return cell_to_pos(cell+direction)
+
+
+func remove_wall(position):
+	$TileMap.set_cell(0, pos_to_cell(position), 0, path)
+
+
+func update_bombs(bombs):
+	$HUD.update_bombs(bombs)
 
 
 func full_board(x, y):

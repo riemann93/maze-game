@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://brkbbdwuw0d2i"]
+
+[ext_resource type="Script" path="res://scripts/shoes.gd" id="1_d4q3g"]
+[ext_resource type="Texture2D" uid="uid://4ramlxogrdrt" path="res://art/shoes.png" id="2_5tqmo"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_563gy"]
+size = Vector2(49, 20)
+
+[node name="Shoes" type="Area2D"]
+scale = Vector2(0.5, 0.5)
+script = ExtResource("1_d4q3g")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2, 34)
+shape = SubResource("RectangleShape2D_563gy")
+
+[node name="Sprite2D" type="Sprite2D" parent="." groups=["shoes"]]
+position = Vector2(0, -26)
+texture = ExtResource("2_5tqmo")
+
+[node name="PickupTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+autostart = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="timeout" from="PickupTimer" to="." method="_on_pickup_timer_timeout"]
