@@ -31,7 +31,7 @@ scale = Vector2(3.3, 1.6)
 metadata/_edit_group_ = true
 
 [node name="StartTimer" type="Timer" parent="."]
-wait_time = 2.0
+wait_time = 0.5
 one_shot = true
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

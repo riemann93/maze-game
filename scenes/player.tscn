@@ -25,3 +25,13 @@ metadata/_edit_group_ = true
 shape = SubResource("CapsuleShape2D_0wmmf")
 debug_color = Color(0, 0.6, 0.701961, 0.419608)
 metadata/_edit_group_ = true
+
+[node name="EtherealTimer" type="Timer" parent="."]
+wait_time = 2.5
+one_shot = true
+
+[node name="JumpCD" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="EtherealTimer" to="." method="_on_ethereal_timer_timeout"]
+[connection signal="timeout" from="JumpCD" to="." method="_on_jump_cd_timeout"]

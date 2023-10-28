@@ -34,7 +34,7 @@ func _ready():
 	pass
 
 func new_game():
-	if level >= 5:
+	if level >= 6:
 		end_game(true)
 		return
 	queue_free_items()
@@ -157,6 +157,27 @@ func strike():
 		end_game()
 		return
 	$HUD.update_lives(lives)
+	$Player.become_ethereal()
+	
+
+func try_to_jump(position, direction):
+	var cell = pos_to_cell(position)
+	print("Current pos: ", cell, $TileMap.get_cell_atlas_coords(0, cell+direction))
+	var potential_wall = $TileMap.get_cell_atlas_coords(0, cell+direction)
+	print("potential_wall: ", cell+direction, potential_wall)
+	var other_side = $TileMap.get_cell_atlas_coords(0, cell+2*direction)
+	print("other side: ", cell+2*direction, other_side)
+	if potential_wall == wall:
+		print("it's a wall!")
+		if other_side == path:
+			# print("It's jumpable!")
+			pass
+		else:
+			pass
+			# print("Can't get over...")
+	else:
+		# print("not a wall")
+		pass
 	
 
 
@@ -191,7 +212,10 @@ func distance_to_player(coords):
 func cell_to_pos(cell):
 	return cell * cell_scaler + Vector2i(cell_scaler/2, cell_scaler/2)
 	
-	
+
+func pos_to_cell(pos):
+	return Vector2i((pos.x/cell_scaler), (pos.y/cell_scaler))
+
 func _process(delta):
 	pass
 	
