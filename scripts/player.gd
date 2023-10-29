@@ -114,8 +114,6 @@ func jump(direction):
 			var shoes_instance = shoes_scene.instantiate()
 			shoes_instance.position = old_position
 			get_parent().add_child(shoes_instance)
-			
-			
 
 
 func become_ethereal():
