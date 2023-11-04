@@ -2,6 +2,7 @@ Maze Runner:
 	
 bugs:
 	sometimes boulders seem to overlap.
+	you can't jump to the left with boots
 	
 
 

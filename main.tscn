@@ -814,8 +814,7 @@ scenes/2/scene = ExtResource("3_agouy")
 [sub_resource type="TileSet" id="TileSet_jir5g"]
 tile_size = Vector2i(64, 64)
 uv_clipping = true
-physics_layer_0/collision_layer = 4
-physics_layer_0/collision_mask = 4
+physics_layer_0/collision_layer = 1
 navigation_layer_0/layers = 1
 sources/0 = SubResource("TileSetAtlasSource_07vv3")
 sources/1 = SubResource("TileSetScenesCollectionSource_yla7n")
@@ -835,13 +834,11 @@ layer_0/tile_data = PackedInt32Array(0, 786432, 5, 65536, 786432, 5, 131072, 786
 [node name="EndPoint" type="Marker2D" parent="."]
 
 [node name="Player" parent="." instance=ExtResource("8_0bhi2")]
-unique_name_in_owner = true
 visible = false
 position = Vector2(-32, -32)
 scale = Vector2(0.7, 0.7)
 
 [node name="HUD" parent="." instance=ExtResource("9_5u2uq")]
-unique_name_in_owner = true
 
 [node name="ArrowTimer" type="Timer" parent="."]
 wait_time = 3.0
@@ -851,11 +848,6 @@ wait_time = 3.0
 
 [node name="BoulderTimer" type="Timer" parent="."]
 
-[node name="TestTimer" type="Timer" parent="."]
-wait_time = 4.0
-autostart = true
-
 [connection signal="exit" from="Player" to="." method="exit_maze"]
 [connection signal="start_game" from="HUD" to="." method="new_game"]
 [connection signal="timeout" from="ArrowTimer" to="." method="_on_arrow_timer_timeout"]
-[connection signal="timeout" from="TestTimer" to="." method="_on_test_timer_timeout"]

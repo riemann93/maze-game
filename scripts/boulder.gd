@@ -31,5 +31,4 @@ func _on_start_timer_timeout():
 
 
 func _on_body_entered(body):
-	print("Boulder hit")
 	strike.emit()

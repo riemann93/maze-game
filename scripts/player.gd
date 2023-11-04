@@ -6,7 +6,7 @@ var bomb_scene = preload("res://scenes/bomb.tscn")
 var speed = 400
 var is_ethereal = false
 var has_shoes = true
-var has_key = false
+@export var has_key: bool = false
 var is_jumping = false
 var is_throwing = false
 var holding_bomb = false
@@ -16,7 +16,7 @@ var bombs = 0
 var directions = [Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0)]
 var last_direction = Vector2i(0, 0)
 
-@export var win_x: int
+@export var win_x: int = 1000
 
 signal exit
 
@@ -66,6 +66,8 @@ func _process(delta):
 	if not Input.is_action_pressed("bomb") and holding_bomb:
 		holding_bomb = false
 		throw_bomb()
+	if Input.is_action_just_pressed("test_button"):
+		$'..'.limit_maze()
 		
 
 func hold_bomb():
